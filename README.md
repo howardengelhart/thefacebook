@@ -95,6 +95,9 @@ The library supports most of the [Facebook Messenger Send API](https://developer
 
 Send messages by instantiating a ```Message``` object and then the specific body (message) type you wish to send, and passing that body object to the Message's ```.send``` method.
 
+### GenericTemplate,  GenericTemplateElement
+Implementation of the send api's [Generic Template](https://developers.facebook.com/docs/messenger-platform/send-api-reference/generic-template).  The Template is mostly a collection of GenericTemplateElements which can be passed as an array to the constructor, or added by accessing the templates ```.elements``` property (an Array).
+
 ```
 'use strict';
 
@@ -108,8 +111,9 @@ templ.elements.push(new fb.GenericTemplateElement({
   image_url : 'http://example.com/image.png',
   subtitle : 'Sub-tite',
   buttons : [
-    new fb.PostbackButton({ title : 'button1', payload : 'PAYLOAD1' }),
-    new fb.PostbackButton({ title : 'button2', payload : 'PAYLOAD2' })
+    new fb.PostbackButton({ title : 'Do This', payload : 'PAYLOAD1' }),
+    new fb.UrlButton({ title : 'Go Here', url : 'http://example.com' }),
+    new fb.ShareButton()
   ]
 });
 message.send(RECIPIENT_ID, templ, PAGE_TOKEN)
@@ -124,25 +128,49 @@ message.send(RECIPIENT_ID, templ, PAGE_TOKEN)
 // message.send(RECIPIENT_ID, 'Some text to send', PAGE_TOKEN)
 
 ```
-### Send API Objects
+### PostbackButton, CallButton, ShareButton, UrlButton
+These objects are all implementations of Facebook Buttons, used by the GenericTemplateElement.  The PostbackButton, CallButton, and UrlButton can all be initialized with a title, and their respective associated data or payload.
 
- GenericTemplate
- GenericTemplateElement
- PostbackButton
- CallButton
- ShareButton
- UrlButton
- ImageAttachment
- AudioAttachment
- VideoAttachment
- FileAttachment
- TextQuickReply
- LocationQuickReply
- Text
+```
+let pb = new PostbackButton({ title : 'A Postback', payload : 'PAYLOAD' });
+pb.title = 'New title.';
+pb.payload = 'New payload';
 
+let ub = new UrlButton({ title : 'A Url', url : 'http://example.com' });
+ub.title = 'New title.';
+ub.url = 'http://example2.com';
 
+let cb = new CallButton({ title : 'Call Me', payload : '555-1212' });
+ub.title = 'New title.';
+ub.payload = '555-3131';
 
+\\ The ShareButton has no data or title.
+sb = new ShareButton();
+```
 
+### ImageAttachment, AudioAttachment, VideoAttachment, FileAttachment
+The attachment objects are all derived from an underlying Attachment base class.  They all have identical constructors and accessible properties.   All Attachment types can be set with either a URL to their respective image, audio clip, video, or file.. or with an attachment_id.  The example below cribs a demonstration of using the is_reusable flag to get an attachment_id and then subsequently use that attachment_id.
 
+```
+message.send(RECIPIENT_ID, new ImageAttachment({ url : 'http://example.com/image.png', is_resuable : true }), PAGE_TOKEN)
+.then( resp => {
+      ATTACHMENT_ID = resp.attachment_id; // This can be stored for later use.
+});
+...
 
+message.send(RECIPIENT_ID, new ImageAttachment({ attachment_id : ATTACHMENT_ID }), PAGE_TOKEN)
+.then ... 
 
+```
+
+### Text, TextQuickReply, LocationQuickReply
+As mentioned earlier, the Message object's ```.send``` method can send string literals.  However the Text object can be used in conjunction with the TextQuckReply and LocationQuickReply objects to support [Quick Replies](https://developers.facebook.com/docs/messenger-platform/send-api-reference/quick-replies).
+
+```
+message.send(RECIPIENT_ID, new Text('Please send me your location.', [ new LocationQuickReply() ]), PAGE_TOKEN)
+
+let t = new Text('Do you want to proceed?');
+t.quick_replies.push(new TextQuickReply( { title : 'Yes', payload : 'QR_YES' }));
+t.quick_replies.push(new TextQuickReply( { title : 'No', payload : 'QR_NO' }));
+message.send(RECIPIENT_ID, t, PAGE_TOKEN);
+```
