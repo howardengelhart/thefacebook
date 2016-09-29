@@ -1,0 +1,43 @@
+{
+  "name": "thefacebook",
+  "version": "0.1.0",
+  "description": "Wrappers for working with the Facebook Messenger ThreadSettings and Send API's.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/howardengelhart/thefacebook.git"
+  },
+  "keywords": [
+    "facebook",
+    "messenger",
+    "threadsettings",
+    "send",
+    "api"
+  ],
+  "author": "Howard Engelhart",
+  "license": "MIT",
+  "engines": {
+    "node": ">= 4.3.0"
+  },
+  "bugs": {
+    "url": "https://github.com/howardengelhart/thefacebook/issues"
+  },
+  "homepage": "https://github.com/howardengelhart/thefacebook#readme",
+  "devDependencies": {
+    "eslint": "3.6.1",
+    "eslint-plugin-jasmine": "1.8.1",
+    "eslint-plugin-node": "2.1.2",
+    "grunt": "1.0.1",
+    "grunt-contrib-watch": "1.0.0",
+    "grunt-eslint": "19.0.0",
+    "grunt-jasmine-nodejs": "1.5.4",
+    "proxyquire": "1.7.10"
+  },
+  "dependencies": {
+    "lodash": "4.16.2",
+    "request": "2.75.0"
+  }
+}
