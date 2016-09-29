@@ -1,6 +1,6 @@
 {
   "name": "thefacebook",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Wrappers for working with the Facebook Messenger ThreadSettings and Send API's.",
   "main": "index.js",
   "scripts": {
