@@ -95,6 +95,29 @@ The library supports most of the [Facebook Messenger Send API](https://developer
 
 Send messages by instantiating a ```Message``` object and then the specific body (message) type you wish to send, and passing that body object to the Message's ```.send``` method.
 
+### ButtonTemplate
+Implementation of the send api's [Button Template](https://developers.facebook.com/docs/messenger-platform/send-api-reference/button-template).  The Template is comprised of a text property and a collection of buttons which can be passed as an array to the constructor, or added by accessing the templates ```.buttons``` property (an Array).
+
+```
+'use strict';
+
+const fb = require('thefacebook');
+
+let message = new fb.Message();
+let templ = new fb.ButtonTemplate('Test Title', [
+    new fb.PostbackButton({ title : 'Do This', payload : 'PAYLOAD1' }),
+    new fb.UrlButton({ title : 'Go Here', url : 'http://example.com' })
+]);
+
+message.send(RECIPIENT_ID, templ, PAGE_TOKEN)
+.then( (result) => {
+  console.log('RESULT:', result);
+})
+.catch( (error) => {
+  console.log('ERROR: ', error.message);
+});
+```
+
 ### GenericTemplate,  GenericTemplateElement
 Implementation of the send api's [Generic Template](https://developers.facebook.com/docs/messenger-platform/send-api-reference/generic-template).  The Template is mostly a collection of GenericTemplateElements which can be passed as an array to the constructor, or added by accessing the templates ```.elements``` property (an Array).
 

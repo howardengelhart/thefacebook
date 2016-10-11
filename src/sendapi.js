@@ -208,6 +208,29 @@ class GenericTemplate extends Template{
     }
 }
 
+class ButtonTemplate extends Template{
+    constructor(text,buttons) {
+        super('button');
+        this.text = text || null;
+        this.buttons = buttons || [];
+    }
+
+    render() {
+        if ((this.text === null) || (this.text === undefined)) {
+            throw new Error(
+                'ButtonTemplate text property cannot be null or undefined.');
+        }
+        if ((this.buttons === null) || (this.buttons === undefined) ||
+            (this.buttons.length < 1)) {
+            throw new Error('ButtonTemplate must have at least one Button.');
+        }
+        return super.render({ 
+            text : this.text,
+            buttons : this.buttons.map((e) => e.render()) 
+        });
+    }
+}
+
 let _QuickReplyTypes = new WeakMap();
 class QuickReply {
     constructor(type) {
@@ -320,6 +343,7 @@ class Message {
 
 }
 
+exports.ButtonTemplate          = ButtonTemplate;
 exports.GenericTemplate         = GenericTemplate;
 exports.GenericTemplateElement  = GenericTemplateElement;
 exports.PostbackButton          = PostbackButton;

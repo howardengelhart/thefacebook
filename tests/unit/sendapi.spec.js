@@ -1,7 +1,7 @@
 'use strict';
 
 describe('sendapi', () => {
-    let PostbackButton, UrlButton, GenericTemplateElement, GenericTemplate, 
+    let PostbackButton, UrlButton, ButtonTemplate, GenericTemplateElement, GenericTemplate, 
         ImageAttachment, AudioAttachment, VideoAttachment, FileAttachment,
         TextQuickReply, LocationQuickReply, Text, Message, request;
 
@@ -18,6 +18,7 @@ describe('sendapi', () => {
         UrlButton               = api.UrlButton;
         GenericTemplateElement  = api.GenericTemplateElement;
         GenericTemplate         = api.GenericTemplate;
+        ButtonTemplate          = api.ButtonTemplate;
         ImageAttachment         = api.ImageAttachment;
         AudioAttachment         = api.AudioAttachment;
         VideoAttachment         = api.VideoAttachment;
@@ -407,6 +408,61 @@ describe('sendapi', () => {
                                             payload : 'payload2' }
                                     ]
                                 }
+                            ]
+                        }
+                    }
+                });
+            });
+        });
+    });
+
+    describe('ButtonTemplate', () => {
+        describe('constructor', () => {
+            it('initializes with no parameters', () => {
+                let e = new ButtonTemplate();
+                expect(e.buttons).toEqual([]);
+                expect(e.text).toBeNull();
+            });
+            
+            it('initializes with parameters', () => {
+                let e = new ButtonTemplate('hello', ['a','b','c'] );
+                expect(e.text).toEqual('hello');
+                expect(e.buttons).toEqual(['a','b','c']);
+            });
+        });
+
+        describe('.render', () => {
+            it('throws an error if there is no text', () => {
+                let t = new ButtonTemplate();
+                expect( ()=> {
+                    t.render();
+                }).toThrowError(
+                    'ButtonTemplate text property cannot be null or undefined.');
+            });
+
+            it('throws an error if there are no buttons', () => {
+                let t = new ButtonTemplate('text');
+                expect( ()=> {
+                    t.render();
+                }).toThrowError(
+                    'ButtonTemplate must have at least one Button.');
+            });
+
+            it('renders the body of a ButtonTemplate', () => {
+                let t = new ButtonTemplate('test-text', [
+                    new PostbackButton({ title: 'button1', payload: 'payload1' } ),
+                    new PostbackButton({ title: 'button2', payload: 'payload2' } )
+                ]);
+
+                expect(t.render()).toEqual({
+                    attachment : {
+                        type : 'template',
+                        payload : {
+                            template_type : 'button',
+                            text : 'test-text',
+                            buttons : [
+                                { type : 'postback', title : 'button1', payload : 'payload1' },
+                                { type : 'postback', title : 'button2', payload : 'payload2' }
                             ]
                         }
                     }
