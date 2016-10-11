@@ -73,7 +73,7 @@ class CallButton extends Button {
 class ShareButton extends Button {
     constructor() {
         super('element_share');
-        delete super.title;
+        delete this.title;
     }
 
     render() {

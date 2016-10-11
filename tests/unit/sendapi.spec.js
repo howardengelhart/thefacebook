@@ -1,7 +1,8 @@
 'use strict';
 
 describe('sendapi', () => {
-    let PostbackButton, UrlButton, ButtonTemplate, GenericTemplateElement, GenericTemplate, 
+    let PostbackButton, ShareButton, UrlButton,
+        ButtonTemplate, GenericTemplateElement, GenericTemplate, 
         ImageAttachment, AudioAttachment, VideoAttachment, FileAttachment,
         TextQuickReply, LocationQuickReply, Text, Message, request;
 
@@ -15,6 +16,7 @@ describe('sendapi', () => {
         let api = proxyquire('../../src/sendapi.js', { request : request });
 
         PostbackButton          = api.PostbackButton;
+        ShareButton             = api.ShareButton;
         UrlButton               = api.UrlButton;
         GenericTemplateElement  = api.GenericTemplateElement;
         GenericTemplate         = api.GenericTemplate;
@@ -186,6 +188,42 @@ describe('sendapi', () => {
                     type : 'web_url',
                     title : 'test-title',
                     url : 'test-url'
+                });
+            });
+        });
+    });
+
+    describe('ShareButton', () => {
+        describe('constructor', () => {
+            it('initializes with no properties', () => {
+                let b = new ShareButton();
+                expect(b.type).toEqual('element_share');
+            });
+        });
+
+        describe('properties', () => {
+            let b;
+            beforeEach( () => {
+                b = new ShareButton();
+            });
+
+            it('.type is read only', () => {
+                expect( () => {
+                    b.type = 'foo';        
+                }).toThrowError(
+                    'Cannot set property type of #<Button> which has only a getter');
+            });
+        });
+        
+        describe('.render', () => {
+            let b;
+            beforeEach( () => {
+                b = new ShareButton();
+            });
+
+            it('renders the formatted button object', () => {
+                expect(b.render()).toEqual({
+                    type : 'element_share'
                 });
             });
         });
