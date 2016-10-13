@@ -226,3 +226,18 @@ senderAction.send(RECIPIENT_ID, 'mark_seen', PAGE_TOKEN)
 
 ```
 
+## User Profile
+[User profile](https://developers.facebook.com/docs/messenger-platform/user-profile) information can be retrieved via the UserProfile object.
+
+```
+'use strict';
+
+const UserProfile = require('thefacebook').UserProfile;
+
+let up = new UserProfile();
+
+up.getProfile(SENDER_ID,PAGE_TOKEN)
+.then(profile => console.log(profile))
+.catch(e => console.log(e));
+```
+
