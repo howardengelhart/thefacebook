@@ -197,3 +197,32 @@ t.quick_replies.push(new TextQuickReply( { title : 'Yes', payload : 'QR_YES' }))
 t.quick_replies.push(new TextQuickReply( { title : 'No', payload : 'QR_NO' }));
 message.send(RECIPIENT_ID, t, PAGE_TOKEN);
 ```
+
+### SenderAction
+The SenderAction is similar to the Message object, except it is configured to deliver alternatively formatted [Sender Actions](https://developers.facebook.com/docs/messenger-platform/send-api-reference/sender-actions).
+
+```
+'use strict';
+
+const fb = require('thefacebook');
+let senderAction = new fb.SenderAction();
+
+// Mark last message as read
+senderAction.send(RECIPIENT_ID, 'mark_seen', PAGE_TOKEN)
+.then( () => {
+    // Turn typing indicators on
+    return senderAction.send(RECIPIENT_ID, 'typing_on', PAGE_TOKEN);
+})
+.then( () => {
+    // do something
+})
+.then ( () => {
+    // Turn typing indicators off
+    return senderAction.send(RECIPIENT_ID, 'typing_off', PAGE_TOKEN);
+})
+.catch( (error) => {
+  console.log('ERROR: ', error.message);
+});
+
+```
+

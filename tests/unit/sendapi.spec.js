@@ -4,7 +4,7 @@ describe('sendapi', () => {
     let PostbackButton, ShareButton, UrlButton,
         ButtonTemplate, GenericTemplateElement, GenericTemplate, 
         ImageAttachment, AudioAttachment, VideoAttachment, FileAttachment,
-        TextQuickReply, LocationQuickReply, Text, Message, request;
+        TextQuickReply, LocationQuickReply, Text, Message, SenderAction, request;
 
     beforeEach(() => {
         const proxyquire = require('proxyquire');
@@ -29,6 +29,7 @@ describe('sendapi', () => {
         LocationQuickReply      = api.LocationQuickReply;
         Text                    = api.Text;
         Message                 = api.Message;
+        SenderAction            = api.SenderAction;
     });
 
     describe('PostbackButton', () => {
@@ -789,6 +790,43 @@ describe('sendapi', () => {
                 .then(done.fail, (err) => {
                     expect(err.message)
                         .toEqual('Unexpected statusCode: 400 - { msg: \'fail\' }');
+                })
+                .then(done, done.fail);
+            });
+        });
+    });
+
+    describe('SenderAction', () => {
+        describe('constructor', () => {
+            it('is initialized with a default endpoint', ()=>{
+                let m = new SenderAction();
+                expect(m.endpoint).toEqual('https://graph.facebook.com/v2.6/me/messages');
+            });
+        });
+        
+        describe('.send', () => {
+            let m, recipientId, accessToken;
+            beforeEach(()=>{
+                recipientId = 'user-1';
+                accessToken = 'token-1';
+                m = new SenderAction();
+
+                request.post.and.callFake((opts,cb) => {
+                    return cb(null, {}, { foo : 'bar' });
+                });
+            });
+
+            it('sends sender actions', (done) => {
+                m.send(recipientId, 'mark_seen', accessToken)
+                .then((v) => {
+                    let opts = request.post.calls.argsFor(0)[0];
+                    expect(opts.qs.access_token).toEqual('token-1');
+                    expect(opts.url).toEqual(m.endpoint);
+                    expect(opts.json).toEqual({
+                        recipient : { id : 'user-1' },
+                        sender_action : 'mark_seen'
+                    });
+                    expect(v).toEqual({ foo : 'bar' });
                 })
                 .then(done, done.fail);
             });

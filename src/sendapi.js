@@ -3,6 +3,11 @@
 const assign = require('lodash').assign;
 const request = require('request');
 const inspect = require('util').inspect;
+const isString = (v) => (
+    ((typeof(v) === 'string') || 
+    ((v !== null) && (typeof(v) === 'object') && 
+     (v.constructor) && (v.constructor.name === 'String'))) );
+
 
 let _ButtonTypes = new WeakMap();
 class Button {
@@ -302,26 +307,39 @@ class Text {
 let _Message = new WeakMap();
 class Message {
     constructor() {
-        _Message.set(this, { endpoint : 'https://graph.facebook.com/v2.6/me/messages' });
+        _Message.set(this, { 
+            endpoint : 'https://graph.facebook.com/v2.6/me/messages'
+        });
     }
 
     get endpoint() {
         return _Message.get(this).endpoint;
     }
 
+    makeOpts(accessToken, recipientId, body) {
+        let result = {
+            url : this.endpoint,
+            qs : { access_token : accessToken },
+            json : {
+                recipient : { id : recipientId }
+            }
+        };
+
+        if (body.render) {
+            assign(result.json, { message : body.render() });
+        } else
+        if (isString(body)) {
+            assign(result.json, { message : { text : body } });
+        } else {
+            assign(result.json, body);
+        }
+
+        return result;
+    }
+
     send(recipientId, body, accessToken) {
         return new Promise((resolve, reject) => {
-            let opts = {
-                url : this.endpoint,
-                qs : {
-                    access_token : accessToken
-                },
-                json : {
-                    recipient : { id : recipientId },
-                    message : body.render ? body.render() : { text : body }
-                }
-            };
-
+            let opts = this.makeOpts(accessToken, recipientId, body);
             request.post(opts, (err, response, body) => {
                 if (err) {
                     return reject(err);
@@ -340,7 +358,16 @@ class Message {
 
         });
     }
+}
 
+class SenderAction extends Message {
+    constructor() {
+        super();
+    }
+
+    send(recipientId, action, accessToken) {
+        return super.send(recipientId, { sender_action : action }, accessToken); 
+    }
 }
 
 exports.ButtonTemplate          = ButtonTemplate;
@@ -358,3 +385,4 @@ exports.TextQuickReply          = TextQuickReply;
 exports.LocationQuickReply      = LocationQuickReply;
 exports.Text                    = Text;
 exports.Message                 = Message;
+exports.SenderAction            = SenderAction;
