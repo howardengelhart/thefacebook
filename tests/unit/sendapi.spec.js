@@ -191,6 +191,20 @@ describe('sendapi', () => {
                     url : 'test-url'
                 });
             });
+
+            it('renders with optional fields', () => {
+                b.webview_height_ratio = 'tall';
+                b.messenger_extensions = true;
+                b.fallback_url = 'some-url';
+                expect(b.render()).toEqual({
+                    type : 'web_url',
+                    title : 'test-title',
+                    url : 'test-url',
+                    webview_height_ratio : 'tall',
+                    messenger_extensions :true,
+                    fallback_url : 'some-url'
+                });
+            });
         });
     });
 

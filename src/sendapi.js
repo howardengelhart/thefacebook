@@ -49,13 +49,27 @@ class UrlButton extends Button {
         props = props || {};
         super('web_url', props.title);
         this.url = props.url;
+        this.webview_height_ratio = props.webview_height_ratio;
+        this.messenger_extensions = props.messenger_extensions;
+        this.fallback_url = props.fallback_url;
     }
     
     render() {
         if ((this.url === null) || (this.url === undefined)) {
             throw new Error('url property cannot be null or undefined.');
         }
-        return super.render({ url : this.url });
+        let data = { url : this.url };
+        if (this.webview_height_ratio) { 
+            data.webview_height_ratio = this.webview_height_ratio;
+        }
+        if (this.messenger_extensions) { 
+            data.messenger_extensions = this.messenger_extensions;
+        }
+        if (this.fallback_url) { 
+            data.fallback_url = this.fallback_url;
+        }
+
+        return super.render(data);
     }
 }
 
