@@ -413,11 +413,13 @@ describe('sendapi', () => {
             it('initializes with no parameters', () => {
                 let e = new GenericTemplate();
                 expect(e.elements).toEqual([]);
+                expect(e.quick_replies).toEqual([]);
             });
             
             it('initializes with parameters', () => {
-                let e = new GenericTemplate( ['a','b','c'] );
+                let e = new GenericTemplate( ['a','b','c'], [ '1', '2', '3' ]);
                 expect(e.elements).toEqual(['a','b','c']);
+                expect(e.quick_replies).toEqual(['1','2','3']);
             });
         });
 
@@ -442,7 +444,7 @@ describe('sendapi', () => {
                         new PostbackButton({ title: 'button2', payload: 'payload2' } )
                     ]
                 }));
-
+                
                 expect(t.render()).toEqual({
                     attachment : {
                         type : 'template',
@@ -465,6 +467,54 @@ describe('sendapi', () => {
                         }
                     }
                 });
+            });
+
+            it('renders the body of a GenericTemplate with QuickReplies', () => {
+                let t = new GenericTemplate();
+                t.elements.push( new GenericTemplateElement({
+                    title : 'test-title',
+                    item_url : 'url',
+                    image_url : 'image',
+                    subtitle : 'subtitle',
+                    buttons : [
+                        new PostbackButton({ title: 'button1', payload: 'payload1' } ),
+                        new PostbackButton({ title: 'button2', payload: 'payload2' } )
+                    ]
+                }));
+
+                t.quick_replies.push( new LocationQuickReply({ title: 'test-title' }) );
+                t.quick_replies.push( 
+                    new TextQuickReply({ title: 'test-title', payload : 'test-payload'}) );
+
+                expect(t.render()).toEqual({
+                    attachment : {
+                        type : 'template',
+                        payload : {
+                            template_type : 'generic',
+                            elements : [
+                                {
+                                    title : 'test-title',
+                                    item_url : 'url',
+                                    image_url : 'image',
+                                    subtitle : 'subtitle',
+                                    buttons : [
+                                        { type : 'postback', title : 'button1',
+                                            payload : 'payload1' },
+                                        { type : 'postback', title : 'button2',
+                                            payload : 'payload2' }
+                                    ]
+                                }
+                            ],
+                            quick_replies : [ 
+                                { content_type : 'location', title : 'test-title' },
+                                { content_type : 'text', title : 'test-title', 
+                                    payload: 'test-payload' }
+                            ]
+                        }
+                    }
+                });
+
+
             });
         });
     });

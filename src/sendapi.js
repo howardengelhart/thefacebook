@@ -213,17 +213,25 @@ class GenericTemplateElement {
 }
 
 class GenericTemplate extends Template{
-    constructor(elements) {
+    constructor(elements, quick_replies) {
         super('generic');
         this.elements = elements || [];
+        this.quick_replies = quick_replies || [];
     }
 
     render() {
+        let obj;
         if ((this.elements === null) || (this.elements === undefined) ||
             (this.elements.length < 1)) {
             throw new Error('GenericTemplate must have at least one Element.');
         }
-        return super.render({ elements : this.elements.map((e) => e.render()) });
+        
+        obj = { elements : this.elements.map((e) => e.render()) };
+        
+        if ((this.quick_replies) && (this.quick_replies.length > 0)) {
+            obj.quick_replies = this.quick_replies.map((r) => r.render());
+        }
+        return super.render(obj);
     }
 }
 
